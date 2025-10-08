@@ -1,0 +1,21 @@
+{
+    "name": "rezultatu-parskati-dummy",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "http-server . -p 4173 -a 127.0.0.1 -c-1",
+        "cy:run": "cypress run",
+        "test:e2e": "start-server-and-test dev http://127.0.0.1:4173/index.html cy:run"
+    },
+    "devDependencies": {
+        "cypress": "^13.17.0",
+        "http-server": "^14.1.1",
+        "start-server-and-test": "^2.1.2"
+    },
+    "description": "",
+    "main": "cypress.config.js",
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs"
+}

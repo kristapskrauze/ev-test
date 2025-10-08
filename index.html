@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rezultātu pārskati — Dummy (stils pielāgots)</title>
+  <style>
+    :root{
+      --bg:#f3f4f6; --card:#ffffff; --text:#1f2937; --muted:#6b7280; --border:#e5e7eb;
+      --brand:#8a1b4b; --brand-hover:#6f153d; --chip:#f3f4f6; --ok:#16a34a; --danger:#dc2626; --warn:#d97706;
+    }
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--text)}
+    .shell{max-width:1160px;margin:0 auto}
+    .topbar{background:#fff;border-bottom:1px solid var(--border)}
+    .topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:16px 20px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .brand .logo{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,#ffb37c,#ff6b6b);display:inline-block}
+    .brand h1{font-size:18px;margin:0;font-weight:600}
+    .brand small{display:block;color:var(--muted);font-weight:400}
+    .user{font-size:12px;color:#111}
+    .page{padding:24px 20px}
+    .page h2{font-size:28px;margin:0 0 16px 0;font-weight:600}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px}
+    .filters{padding:16px}
+    .filters-grid{display:grid;grid-template-columns:1.2fr 1fr 1.2fr;gap:14px;align-items:end}
+    .form-field{position:relative}
+    label{font-size:12px;color:var(--muted);display:block;margin:0 0 6px}
+    input,button{height:40px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:14px;padding:0 12px}
+    .search-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:18px;height:18px;opacity:.65}
+    .dates{display:grid;grid-template-columns:1fr 16px 1fr;gap:10px;align-items:center}
+    .dash{color:var(--muted);text-align:center}
+
+    /* --- Multi-select dropdowns (custom - nestrādāja OOB) --- */
+    .ms{position:relative}
+    .ms-btn{display:flex;align-items:center;justify-content:space-between;width:100%;cursor:pointer}
+    .ms-btn > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ms-menu{position:absolute;z-index:20;top:44px;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:6px;max-height:260px;overflow:auto}
+    .ms-option{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer}
+    .ms-option:hover{background:#f9fafb}
+    .ms-option:focus{outline:2px solid var(--brand);outline-offset:2px}
+    .ms-option input{pointer-events:none}
+    .chev{margin-left:8px;width:16px;height:16px;opacity:.6}
+    .hint{margin-top:6px;font-size:11px;color:var(--muted)}
+
+    .statuses{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    .chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--chip);border-radius:8px;padding:8px 12px;font-size:14px;color:#111;cursor:pointer;user-select:none}
+    .chip[aria-pressed="true"], .chip.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+    .chip[aria-pressed="true"] .dot{background:#fff !important}
+    .dot{width:8px;height:8px;border-radius:999px;display:inline-block}
+
+    .actions{display:flex;gap:10px;margin-top:16px}
+    .btn-primary{background:var(--brand);color:#fff;border:1px solid var(--brand)}
+    .btn-primary:hover{background:var(--brand-hover)}
+    .btn-ghost{background:#fff;border:1px solid var(--border)}
+
+    .meta{font-size:13px;color:var(--muted);margin-top:10px}
+    .results{margin-top:16px;padding:0}
+    .row{display:grid;grid-template-columns:160px 1fr 220px 140px 40px;gap:16px;align-items:center;padding:14px 16px;border-top:1px solid var(--border)}
+    .row:first-child{border-top:none}
+    .date{color:#374151}
+    .date small{display:block;color:var(--muted)}
+    .title{font-weight:600}
+    .lab{color:#374151}
+    .status-pill{display:inline-flex;align-items:center;gap:8px;color:var(--ok);font-weight:600}
+    .status-pill .dot{background:var(--ok)}
+    .pdf{justify-self:end;opacity:.7}
+    .empty{padding:16px;color:var(--muted);font-style:italic}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,1px,1px);white-space:nowrap;border:0}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner shell">
+      <div class="brand">
+        <span class="logo" aria-hidden="true"></span>
+        <div>
+          <h1>Laboratorisko izmeklējumu portāls</h1>
+          <small>Vienotā veselības nozares elektroniskā informācijas sistēma</small>
+        </div>
+      </div>
+      <div class="user">Lietotājs<br><strong>KRISTAPS KRAUZE</strong></div>
+    </div>
+  </div>
+
+  <div class="page shell">
+    <h2>Rezultātu pārskati</h2>
+
+    <section class="card filters" aria-labelledby="filtersHeading">
+      <h3 id="filtersHeading" class="sr-only">Filtri</h3>
+      <div class="filters-grid">
+        <!-- Custom multi-select -->
+        <div class="form-field">
+          <label for="areaBtn">Izmeklējuma jomas</label>
+          <div class="ms" data-testid="filter-joma">
+            <button id="areaBtn" class="ms-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="areaMenu">
+              <span id="areaLabel">—</span>
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <ul id="areaMenu" class="ms-menu" role="listbox" aria-multiselectable="true" hidden></ul>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="lab">Laboratorija</label>
+          <input id="lab" data-testid="filter-laboratorija" type="text" />
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </div>
+
+        <div class="form-field">
+          <label for="dateFrom">Datumu periods</label>
+          <div class="dates">
+            <input id="dateFrom" data-testid="filter-date-no" placeholder="dd.mm.gggg">
+            <span class="dash">—</span>
+            <input id="dateTo" data-testid="filter-date-lidz" placeholder="dd.mm.gggg">
+          </div>
+        </div>
+      </div>
+
+      <div class="statuses" role="group" aria-label="Statuss">
+        <span class="chip" role="button" tabindex="0" aria-pressed="false" data-testid="status-chip" data-status="Papildināts"><span class="dot" style="background:var(--ok)"></span>Papildināts</span>
+        <span class="chip" role="button" tabindex="0" aria-pressed="false" data-testid="status-chip" data-status="Pārtraukts"><span class="dot" style="background:#059669"></span>Pārtraukts</span>
+        <span class="chip" role="button" tabindex="0" aria-pressed="false" data-testid="status-chip" data-status="Labots"><span class="dot" style="background:#10b981"></span>Labots</span>
+        <span class="chip" role="button" tabindex="0" aria-pressed="false" data-testid="status-chip" data-status="Anulēts"><span class="dot" style="background:var(--danger)"></span>Anulēts</span>
+        <span class="chip" role="button" tabindex="0" aria-pressed="false" data-testid="status-chip" data-status="Pabeigts"><span class="dot" style="background:var(--ok)"></span>Pabeigts</span>
+        <span class="chip" role="button" tabindex="0" aria-pressed="false" data-testid="status-chip" data-status="Provizorisks"><span class="dot" style="background:var(--warn)"></span>Provizorisks</span>
+        <span class="chip" role="button" tabindex="0" aria-pressed="false" data-testid="status-chip" data-status="Reģistrēts" style="border-style:dashed;color:#2563eb"><span class="dot" style="background:#2563eb"></span>Reģistrēts</span>
+      </div>
+
+      <div class="actions">
+        <button id="btnFilter" class="btn-primary" data-testid="filter-submit">Atlasīt</button>
+        <button id="btnReset" class="btn-ghost" data-testid="filter-reset">Notīrīt</button>
+      </div>
+
+      <div class="meta" id="metaInfo" aria-live="polite"></div>
+    </section>
+
+    <section class="card" style="margin-top:12px;" aria-labelledby="resultsHeading">
+      <h3 id="resultsHeading" class="sr-only">Rezultātu saraksts</h3>
+      <div id="results" class="results"></div>
+      <div id="emptyState" class="empty" hidden>Nav ierakstu, kas atbilst filtriem.</div>
+    </section>
+  </div>
+
+  <script>
+    // ---------------- Mockoti dati  ----------------
+    const DATA = [
+      { id: 1,  date: '2024-12-30T17:06:00', lab: 'CENTRĀLĀ LABORATORIJA, SIA', area: 'Endokrinoloģija',  title: 'Glikozes regulācija',        status: 'Pabeigts' },
+      { id: 2,  date: '2025-09-28T08:20:00', lab: 'E. Gulbja laboratorija',     area: 'Asinsanalīzes',     title: 'Hemoglobīns (HGB)',         status: 'Pabeigts' },
+      { id: 3,  date: '2025-09-29T11:05:00', lab: 'NMS laboratorija',            area: 'Ķīmija',            title: 'Kreatinīns',                 status: 'Papildināts' },
+      { id: 4,  date: '2025-09-30T09:22:00', lab: 'E. Gulbja laboratorija',     area: 'Asinsanalīzes',     title: 'Pilna asinsaina',            status: 'Pabeigts' },
+      { id: 5,  date: '2025-10-01T08:40:00', lab: 'NMS laboratorija',            area: 'Asinsanalīzes',     title: 'CRP',                        status: 'Anulēts' },
+      { id: 6,  date: '2025-10-01T12:10:00', lab: 'Centrālā laboratorija',       area: 'Ģenētika',          title: 'BRCA1/2 skrīnings',          status: 'Reģistrēts' },
+      { id: 7,  date: '2025-10-02T10:00:00', lab: 'CENTRĀLĀ LABORATORIJA, SIA',  area: 'Lipīdi',            title: 'Kopējais holesterīns',       status: 'Labots' },
+      { id: 8,  date: '2025-10-02T14:35:00', lab: 'E. Gulbja laboratorija',     area: 'Urīna analīzes',    title: 'Urīna vispārēja analīze',    status: 'Pabeigts' },
+      { id: 9,  date: '2025-10-03T10:15:00', lab: 'Centrālā laboratorija',       area: 'Endokrinoloģija',   title: 'D vitamīns',                 status: 'Provizorisks' },
+      { id:10,  date: '2025-10-03T16:55:00', lab: 'BIOR',                        area: 'Mikrobioloģija',    title: 'Testosterons',              status: 'Pārtraukts' },
+      { id:11,  date: '2025-10-04T09:30:00', lab: 'NMS laboratorija',            area: 'Koagulācija',       title: 'INR',                        status: 'Pabeigts' },
+      { id:12,  date: '2025-10-04T15:42:00', lab: 'E. Gulbja laboratorija',     area: 'Imunoloģija',       title: 'ANA profils',                 status: 'Papildināts' },
+      { id:13,  date: '2025-10-05T08:05:00', lab: 'CENTRĀLĀ LABORATORIJA, SIA',  area: 'Ķīmija',            title: 'ALAT/ASAT',                   status: 'Pabeigts' },
+      { id:14,  date: '2025-10-05T12:50:00', lab: 'Centrālā laboratorija',       area: 'Lipīdi',            title: 'HDL/LDL frakcijas',           status: 'Pabeigts' },
+      { id:15,  date: '2025-10-06T10:18:00', lab: 'NMS laboratorija',            area: 'Asinsanalīzes',     title: 'Trombocīti (PLT)',            status: 'Provizorisks' },
+      { id:16,  date: '2025-10-06T17:22:00', lab: 'E. Gulbja laboratorija',     area: 'Endokrinoloģija',   title: 'TSH',                        status: 'Pabeigts' },
+      { id:17,  date: '2025-10-07T08:40:00', lab: 'Centrālā laboratorija',       area: 'Imunoloģija',       title: 'IgE kopējais',                status: 'Reģistrēts' },
+      { id:18,  date: '2025-10-07T13:33:00', lab: 'BIOR',                        area: 'Mikrobioloģija',    title: 'Androgēni',                status: 'Anulēts' }
+    ];
+
+    // --------- Palīgfunkcijas ---------
+    const $ = (s)=>document.querySelector(s);
+    const $$ = (s)=>Array.from(document.querySelectorAll(s));
+    const results = $('#results');
+    const emptyState = $('#emptyState');
+    const metaInfo = $('#metaInfo');
+
+    function pad(n){return String(n).padStart(2,'0')}
+    function fmtLV(iso){const d=new Date(iso);return pad(d.getDate())+'.'+pad(d.getMonth()+1)+'.'+d.getFullYear()}
+    function fmtTime(iso){const d=new Date(iso);return pad(d.getHours())+':'+pad(d.getMinutes())}
+
+    function render(rows){
+      results.innerHTML='';
+      rows.forEach(r=>{
+        const row=document.createElement('div');
+        row.className='row';
+        row.setAttribute('data-testid','results-row');
+        row.innerHTML=`
+          <div class="date"><div>${fmtLV(r.date)}</div><small>${fmtTime(r.date)}</small></div>
+          <div class="title">${r.title}</div>
+          <div class="lab" data-testid="cell-lab">${r.lab}</div>
+          <div class="status-pill"><span class="dot"></span>${r.status}</div>
+          <div class="pdf" aria-label="PDF">📄</div>
+        `;
+        const pill=row.querySelector('.status-pill');
+        const dot=row.querySelector('.status-pill .dot');
+        const colorBy = {
+          'Pabeigts':'var(--ok)','Anulēts':'var(--danger)','Provizorisks':'var(--warn)',
+          'Papildināts':'var(--ok)','Pārtraukts':'#059669','Labots':'#10b981','Reģistrēts':'#2563eb'
+        };
+        const c = colorBy[r.status]||'var(--ok)'; pill.style.color=c; dot.style.background=c;
+        results.appendChild(row);
+      });
+      emptyState.hidden = rows.length!==0;
+      metaInfo.textContent = `${rows.length} ieraksts(-i)`;
+    }
+
+    function parseLV(d){
+      if(!d) return '';
+      const parts=d.split('.');
+      if(parts.length!==3) return '';
+      const [dd,mm,yyyy]=parts;
+      return `${yyyy}-${mm}-${dd}`;
+    }
+    function inRange(iso,fromLV,toLV){
+      const day=iso.slice(0,10);
+      const from=parseLV(fromLV);
+      const to=parseLV(toLV);
+      if(from && day<from) return false;
+      if(to && day>to) return false;
+      return true;
+    }
+
+    // ------------- Statusa čipi -------------
+    const selectedStatuses = new Set();
+    function toggleChip(el){
+      const pressed = el.getAttribute('aria-pressed') === 'true';
+      const next = !pressed; el.setAttribute('aria-pressed', String(next));
+      const status = el.dataset.status; if(next) selectedStatuses.add(status); else selectedStatuses.delete(status);
+    }
+
+    // ------------- Jomu multi-selects -------------
+    const AREA_VALUES = ['Asinsanalīzes','Endokrinoloģija','Ķīmija','Ģenētika','Imunoloģija','Urīna analīzes','Lipīdi','Koagulācija','Mikrobioloģija'];
+    const selectedAreas = new Set();
+    const areaBtn = $('#areaBtn');
+    const areaMenu = $('#areaMenu');
+    const areaLabel = $('#areaLabel');
+
+    function slug(s){return s.toLowerCase().replace(/[^a-z0-9āēīūšķļķņž]+/gi,'-')}
+
+    function buildAreaMenu(){
+      areaMenu.innerHTML = '';
+      AREA_VALUES.forEach(v=>{
+        const li = document.createElement('li');
+        li.className = 'ms-option';
+        li.setAttribute('role','option');
+        li.setAttribute('tabindex','0'); // <-- padara fokusējamu tastatūrai/Cypress
+        li.dataset.value = v;
+        li.dataset.testid = `area-option-${slug(v)}`;
+        li.setAttribute('data-testid', `area-option-${slug(v)}`);
+        li.setAttribute('aria-selected','false');
+        li.innerHTML = `<input type="checkbox" aria-hidden="true"/> <span>${v}</span>`;
+        li.addEventListener('click',()=>{ toggleArea(v); });
+        li.addEventListener('keydown',(e)=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggleArea(v); }});
+        areaMenu.appendChild(li);
+      });
+    }
+
+    function refreshAreaLabel(){
+      const arr = Array.from(selectedAreas);
+      areaLabel.textContent = arr.length ? arr.join(', ') : '—';
+      areaBtn.setAttribute('aria-expanded', String(!areaMenu.hidden));
+    }
+
+    function syncAreaMenu(){
+      $$('#areaMenu .ms-option').forEach(li=>{
+        const v = li.dataset.value; const checked = selectedAreas.has(v);
+        li.setAttribute('aria-selected', String(checked));
+        const cb = li.querySelector('input'); if(cb) cb.checked = checked;
+      });
+    }
+
+    function openArea(){ areaMenu.hidden = false; refreshAreaLabel(); syncAreaMenu();
+      // pēc atvēršanas fokusē pirmo izvēlēto vai pirmo elementu
+      const target = $$('#areaMenu .ms-option').find(li=>selectedAreas.has(li.dataset.value)) || $('#areaMenu .ms-option');
+      if(target) target.focus();
+    }
+    function closeArea(){ areaMenu.hidden = true; refreshAreaLabel(); areaBtn.focus(); }
+    function toggleAreaMenu(){ areaMenu.hidden ? openArea() : closeArea(); }
+
+    function toggleArea(v){
+      if(selectedAreas.has(v)) selectedAreas.delete(v); else selectedAreas.add(v);
+      syncAreaMenu(); refreshAreaLabel(); applyFilters();
+      document.dispatchEvent(new CustomEvent('filters:areaChanged'));
+    }
+
+    // klaviatūras navigācija izvēlnē (bultiņas)
+    areaMenu.addEventListener('keydown', (e)=>{
+      if(e.key!=='ArrowDown' && e.key!=='ArrowUp') return;
+      e.preventDefault();
+      const items = $$('#areaMenu .ms-option');
+      const i = items.indexOf(document.activeElement);
+      if(i===-1) { items[0]?.focus(); return; }
+      const next = e.key==='ArrowDown' ? i+1 : i-1;
+      const bounded = (next<0) ? items.length-1 : (next>=items.length ? 0 : next);
+      items[bounded].focus();
+    });
+
+    buildAreaMenu(); refreshAreaLabel();
+
+    areaBtn.addEventListener('click', toggleAreaMenu);
+    document.addEventListener('click', (e)=>{ if(!areaMenu.hidden && !e.target.closest('.ms')) closeArea(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && !areaMenu.hidden){ e.preventDefault(); closeArea(); }});
+
+    function getSelectedAreas(){ return Array.from(selectedAreas); }
+
+    // ------------- Filtrēšana -------------
+    function applyFilters(){
+      const labQ=($('#lab').value||'').trim().toLowerCase();
+      const from=$('#dateFrom').value; const to=$('#dateTo').value;
+      const areas=getSelectedAreas();
+      const statuses = selectedStatuses.size ? selectedStatuses : null;
+
+      const rows=DATA.filter(r=>{
+        const labOk=!labQ || r.lab.toLowerCase().includes(labQ);
+        const dateOk=inRange(r.date,from,to);
+        const areaOk=!areas.length || areas.includes(r.area);
+        const statusOk=!statuses || statuses.has(r.status);
+        return labOk && dateOk && areaOk && statusOk;
+      });
+      render(rows);
+      document.dispatchEvent(new CustomEvent('filters:applied'));
+    }
+
+    // ------------- Eventi -------------
+    render(DATA);
+
+    // Atlasīt/Notīrīt
+    $('#btnFilter').addEventListener('click',applyFilters);
+    $('#btnReset').addEventListener('click',()=>{
+      $('#lab').value=''; $('#dateFrom').value=''; $('#dateTo').value='';
+      selectedStatuses.clear();
+      document.querySelectorAll("[data-testid='status-chip']").forEach(ch=>ch.setAttribute('aria-pressed','false'));
+      selectedAreas.clear(); syncAreaMenu(); refreshAreaLabel();
+      applyFilters();
+      document.dispatchEvent(new CustomEvent('filters:reset'));
+    });
+
+    // Enter nospiešana laukos, priekš accesibility testiem
+    ['#lab','#dateFrom','#dateTo'].forEach(s=>$(s).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();applyFilters();}}));
+
+    // Statusa čipi ar klikšķi un tastatūru
+    document.querySelectorAll("[data-testid='status-chip']").forEach(ch=>{
+      ch.addEventListener('click',()=>{ toggleChip(ch); applyFilters(); });
+      ch.addEventListener('keydown',(e)=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggleChip(ch); applyFilters(); }});
+    });
+  </script>
+</body>
+</html>
